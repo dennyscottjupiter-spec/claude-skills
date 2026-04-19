@@ -1,0 +1,161 @@
+{
+  "title": "How to Deploy a Dockerized Python Application",
+  "subtitle": "Standard Operating Procedure for Backend Environments",
+  "filename": "docker_deployment_guide.pdf",
+  "doc_kind": "howto",
+  "audience": "Backend Developers & DevOps",
+  "updated": "March 2026",
+  "toc": true,
+  "numbered": true,
+  "footer": "Confidential & Proprietary \u00b7 Internal Corporate Documentation",
+  "blocks":[
+    {
+      "type": "p",
+      "text": "This guide provides step-by-step instructions for containerizing a standard Python web application using Docker. It strictly follows the Divio documentation framework for practical How-To guides."
+    },
+    {
+      "type": "important",
+      "text": "Before you begin, ensure you have Docker Desktop and Python 3.12+ installed on your local machine. You will also need access to the internal container registry."
+    },
+    {
+      "type": "h1",
+      "text": "Application Setup"
+    },
+    {
+      "type": "p",
+      "text": "First, create the core application file. We will use a lightweight Flask server for this demonstration."
+    },
+    {
+      "type": "code",
+      "lines":[
+        "import os",
+        "from flask import Flask",
+        "",
+        "app = Flask(__name__)",
+        "",
+        "@app.route('/')",
+        "def hello_world():",
+        "    env = os.getenv('APP_ENV', 'development')",
+        "    return f'System is running in {env} mode.'",
+        "",
+        "if __name__ == '__main__':",
+        "    app.run(host='0.0.0.0', port=8080)"
+      ]
+    },
+    {
+      "type": "tip",
+      "text": "Always use <b>0.0.0.0</b> as the host in your Python script when running inside a Docker container. If you leave it as localhost, the application will not be accessible from the outside."
+    },
+    {
+      "type": "h1",
+      "text": "Containerization"
+    },
+    {
+      "type": "p",
+      "text": "Next, define the environment and build instructions in your Dockerfile. We strongly recommend using the official python slim images to reduce the final attack surface and image size."
+    },
+    {
+      "type": "code",
+      "lines":[
+        "FROM python:3.12-slim",
+        "",
+        "WORKDIR /app",
+        "COPY requirements.txt .",
+        "RUN pip install --no-cache-dir -r requirements.txt",
+        "",
+        "COPY . .",
+        "EXPOSE 8080",
+        "",
+        "CMD [\"python\", \"app.py\"]"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Build and Execution Steps"
+    },
+    {
+      "type": "steps",
+      "items":[
+        "Open your terminal and navigate to the project root directory.",
+        "Execute the docker build command, tagging your image appropriately.",
+        "Run the container and map the internal port 8080 to an available port on your local machine."
+      ]
+    },
+    {
+      "type": "code",
+      "lines":[
+        "# 1. Build the image",
+        "docker build -t my-python-app:latest .",
+        "",
+        "# 2. Run the container in detached mode",
+        "docker run -d -p 8080:8080 -e APP_ENV=production my-python-app:latest"
+      ]
+    },
+    {
+      "type": "h1",
+      "text": "Configuration Reference"
+    },
+    {
+      "type": "p",
+      "text": "The following environment variables are supported by the container runtime environment:"
+    },
+    {
+      "type": "table",
+      "headers":[
+        "Environment Variable",
+        "Required",
+        "Default Value",
+        "Description"
+      ],
+      "col_ratios":[1.5, 0.8, 1.2, 2.5],
+      "rows": [["APP_ENV", "No", "development", "Sets the runtime environment mode."],["DB_HOST", "Yes", "localhost", "Database endpoint URL."],["API_SECRET", "Yes", "None", "Secret key for external API communication."]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Never hardcode your <i>API_SECRET</i> in the Dockerfile. Always inject it at runtime using a secure secrets manager or environment variables."
+    },
+    {
+      "type": "spacer",
+      "height": 15
+    },
+    {
+      "type": "hr",
+      "width": "60%",
+      "thickness": 1
+    },
+    {
+      "type": "spacer",
+      "height": 10
+    },
+    {
+      "type": "h2",
+      "text": "Troubleshooting Common Issues"
+    },
+    {
+      "type": "bullets",
+      "items":[
+        "<b>Port Conflicts:</b> If port 8080 is already in use, change the mapping in the run command (e.g., <code>-p 9090:8080</code>).",
+        "<b>Missing Dependencies:</b> Ensure all required packages are listed in your <code>requirements.txt</code> file before building.",
+        "<b>Permission Denied:</b> You may need to prepend commands with <code>sudo</code> on certain Linux environments."
+      ]
+    },
+    {
+      "type": "spacer",
+      "height": 30
+    },
+    {
+      "type": "footnotes",
+      "items":[
+        {
+          "n": "1",
+          "text": "For advanced multi-stage builds, refer to the official Docker documentation."
+        },
+        {
+          "n": "2",
+          "text": "The Divio documentation framework separates tutorials, how-to guides, reference, and explanation."
+        }
+      ]
+    }
+  ]
+}
