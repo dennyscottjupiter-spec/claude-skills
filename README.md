@@ -73,6 +73,16 @@ These skills live directly in `~/.claude/skills/` and were not developed as stan
 | **self-improving-agent** | auto-triggered | Captures errors and corrections to improve future sessions. |
 | **start** | `/start` | Generates a self-contained handoff prompt to resume work in a fresh conversation. |
 
+### Slash Commands (`~/.claude/commands/`)
+
+Commands are a simpler alternative to skills — a single `.md` file invoked by name, with no frontmatter or folder structure required. They live in `~/.claude/commands/` and show up as `/command-name` just like skills.
+
+> **Difference from skills:** Commands are flat files; skills are folders with frontmatter and optional scripts/references. Use a command for simple workflows, a skill for anything with supporting files or auto-trigger logic.
+
+| Command | Invoke with | What it does |
+|---|---|---|
+| **learnings-sweep** | `/learnings-sweep` | End-of-session sweep — scans the conversation for persistent errors and appends them to the right `LEARNINGS.md` file(s). |
+
 ---
 
 ## How to Add a New Skill to This Repo
