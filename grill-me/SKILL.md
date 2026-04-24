@@ -24,9 +24,11 @@ Before the first question, explore the codebase for anything already answerable 
 
 Use `Grep`, `Glob`, `Read` liberally up front. The user's turn is for decisions only they can make.
 
+If there is no codebase (plan-only conversation), say one line: **"No codebase to explore — all decisions go to you."** then proceed directly to the tree.
+
 ### 2. Enumerate the tree out loud
 
-First message after invocation: list every open decision you can identify from the plan, numbered. As answers land, child nodes will appear — add them. Show the tree each turn so neither side loses the thread:
+First message after invocation: list every open decision you can identify from the plan, numbered. Aim for **5–8 top-level nodes**. For complex plans, group related choices rather than listing 20 nodes — enumerate sub-nodes as you traverse each branch. As answers land, child nodes will appear — add them. Show the tree each turn so neither side loses the thread:
 
 ```
 Open
@@ -61,6 +63,8 @@ If the answer space is **discrete**, call `AskUserQuestion` with your recommenda
 Walk one branch to its leaves before starting another. Jumping between branches forces the user to rebuild mental state each turn.
 
 Exception: if answering node A reveals that node B is load-bearing and blocks further progress on A, pivot to B — but name the pivot explicitly.
+
+**Priority override:** if a critical node (failure mode, rollback, hard deadline) would be buried deep in the current branch, pull it forward — state: *"Before going deeper on [branch], one critical blocker:"* — then ask it as the next question.
 
 ### 6. Cover the usual suspects
 
